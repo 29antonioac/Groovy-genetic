@@ -21,12 +21,29 @@ int compute_fitness(boolean[] chromosome)
 
 boolean[] mutate(boolean[] chromosome)
 {
-  boolean[] mutated = chromosome
+  boolean[] mutated = chromosome.collect()
   int index = generator.nextInt(chromosome.length)
   mutated[index] = !mutated[index]
   return mutated
 }
 
+boolean[][] mutate_pool( pool)
+{
+  def new_pool = []
+  pool.each
+  {
+    new_pool.add(mutate(it))
+  }
+  return new_pool
+}
+
 boolean[] chromosome = random_chromosome(4)
 println chromosome
 println mutate(chromosome)
+println chromosome
+
+def pool = [chromosome,mutate(chromosome)]
+println ""
+println pool
+
+println mutate_pool(pool)
