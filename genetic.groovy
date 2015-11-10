@@ -1,5 +1,6 @@
-#!/usr/bin/env groovy
+#!/usr/bin/env
 
+import groovy.time.*
 import groovy.transform.Field
 
 @Field Random generator = new Random(System.currentTimeMillis())
@@ -37,13 +38,52 @@ boolean[][] mutate_pool( pool)
   return new_pool
 }
 
-boolean[] chromosome = random_chromosome(4)
-println chromosome
-println mutate(chromosome)
-println chromosome
+def time_mutations(int number, boolean[] individual)
+{
+  def timeStart = new Date()
 
-def pool = [chromosome,mutate(chromosome)]
-println ""
-println pool
+  number.times
+  {
+    mutate(individual)
+  }
 
-println mutate_pool(pool)
+  def timeStop = new Date()
+  TimeDuration duration = TimeCategory.minus(timeStop, timeStart)
+  return duration
+}
+
+def main()
+{
+  def length = 16
+  def iterations = 100000
+  def top_length = 32768
+
+  while (length <= top_length)
+  {
+    boolean[] individual = random_chromosome(length)
+    def elapsed = time_mutations(iterations, individual).toString()
+    println "Groovy-BitString " + length.toString() + ", " + elapsed
+    length *= 2
+  }
+}
+
+def tests()
+{
+  def pool = []
+  def chromosome_length = 16
+  def pool_size = 32
+
+  pool_size.times
+  { i ->
+    println i
+    boolean[] actual_chromosome = random_chromosome(chromosome_length)
+    pool << actual_chromosome
+    // assert pool[i].length > 0
+    assert actual_chromosome.length == chromosome_length
+    def mutated = mutate(actual_chromosome)
+    assert actual_chromosome.length == mutated.length
+    assert actual_chromosome != mutated
+  }
+}
+tests()
+main()
